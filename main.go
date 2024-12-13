@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mairuu/nekopost-api/internal/handler"
+	"github.com/mairuu/nekopost-api/handler"
 )
 
 func main()  {

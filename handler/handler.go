@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mairuu/nekopost-api/internal/api"
-	"github.com/mairuu/nekopost-api/internal/validator"
+	"github.com/mairuu/nekopost-api/api"
+	"github.com/mairuu/nekopost-api/validator"
 )
 
 type HandleError struct {
