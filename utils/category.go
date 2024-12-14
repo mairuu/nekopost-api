@@ -1,12 +1,8 @@
-package validator
+package utils
 
-type Category struct {
-	CateName  string
-	CateLink  string
-	CateCode  string
-}
+import "github.com/mairuu/nekopost-api/types"
 
-var Categories = []Category{
+var Categories = []types.Category{
 	{CateName: "Fantasy", CateLink: "fantasy", CateCode: "1"},
 	{CateName: "Action", CateLink: "action", CateCode: "2"},
 	{CateName: "Drama", CateLink: "drama", CateCode: "3"},
@@ -33,8 +29,8 @@ var Categories = []Category{
 	{CateName: "Reincanate", CateLink: "reincanate", CateCode: "51"},
 }
 
-var CategoryByName = make(map[string]Category)
-var CategoryByLink = make(map[string]Category)
+var CategoryByName = make(map[string]types.Category)
+var CategoryByLink = make(map[string]types.Category)
 
 func init() {
 	for _, category := range Categories {
@@ -43,21 +39,22 @@ func init() {
 	}
 }
 
-func GetCategoryByName(name string) (Category, bool) {
+func GetCategoryByName(name string) (types.Category, bool) {
 	category, exists := CategoryByName[name]
 	return category, exists
 }
 
-func GetCategoryByCode(code string) (Category, bool) {
+func GetCategoryByCode(code string) (types.Category, bool) {
 	for _, category := range Categories {
 		if category.CateCode == code {
 			return category, true
 		}
 	}
-	return Category{}, false
+	return types.Category{}, false
 }
 
-func GetCategoryByLink(link string) (Category, bool) {
+func GetCategoryByLink(link string) (types.Category, bool) {
 	category, exists := CategoryByLink[link]
 	return category, exists
 }
+

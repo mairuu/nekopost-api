@@ -1,4 +1,4 @@
-package validator
+package utils
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ type QueryValidator struct {
     validationErrors []string
 }
 
-func New() *QueryValidator {
+func NewValidator() *QueryValidator {
     return &QueryValidator{}
 }
 
