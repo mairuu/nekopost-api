@@ -3,7 +3,10 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"runtime/debug"
+	"time"
 )
 
 type HandleError struct {
@@ -17,35 +20,30 @@ func (e HandleError) Error() string {
     return e.Message
 }
 
-func (f HandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    err := f(w, r)
-    if err == nil {
-        return
-    }
-    herr, ok := err.(HandleError)
-    if !ok {
-        herr = HandleError{
-            Code: http.StatusInternalServerError,
-            Message: http.StatusText(http.StatusInternalServerError),
-        }
-    }
-    SendError(w, r, herr)
-}
-
 func ToHttpHandler(handler HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
+        // Recover from panics
+        defer func() {
+            if rec := recover(); rec != nil {
+                log.Printf("panic recovered: %v\n%s", rec, debug.Stack())
+                http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+            }
+        }()
+
+        start := time.Now()
+
         err := handler(w, r)
-        if err == nil {
-            return
-        }
-        herr, ok := err.(HandleError)
-        if !ok {
-            herr = HandleError{
-                Code: http.StatusInternalServerError,
-                Message: http.StatusText(http.StatusInternalServerError),
+
+        log.Printf("Method: %s, Path: %s, Duration: %v, Error: %v", r.Method, r.URL.Path, time.Since(start), err)
+
+        if err != nil {
+            switch e := err.(type) {
+            case HandleError:
+                SendError(w, r, e)
+            default:
+                http.Error(w, "Internal Server Error", http.StatusInternalServerError)
             }
         }
-        SendError(w, r, herr)
     }
 }
 
