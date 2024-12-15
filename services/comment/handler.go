@@ -1,4 +1,4 @@
-package chapter
+package comment
 
 import (
 	"net/http"
@@ -8,25 +8,22 @@ import (
 )
 
 type Handler struct {
-    chapterApi types.ChapterApi;
     commentApi types.CommentApi;
 }
 
-func NewHandler(chapters types.ChapterApi) *Handler {
+func NewHandler(comments types.CommentApi) *Handler {
     return &Handler{
-        chapterApi: chapters,
+        commentApi: comments,
     }
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
-    mux.HandleFunc("GET /api/chapters/latest", utils.ToHttpHandler(h.handleGetChapters))
+    mux.HandleFunc("GET /api/comments/{comment_id}", utils.ToHttpHandler(h.handleGetComment))
 }
 
-func (h *Handler) handleGetChapters(w http.ResponseWriter, r *http.Request) error {
+func (h *Handler) handleGetComment(w http.ResponseWriter, r *http.Request) error {
     v := utils.NewValidator()
-    query := r.URL.Query()
-    page := v.ValidateInt(query.Get("page"), "page")
-    _type := v.ValidateProjectType(query.Get("type"))
+    cid := v.ValidateInt(r.PathValue("comment_id"), "comment id")
     if err := v.Errors(); err != nil {
         return utils.HandleError{
             Code:    http.StatusBadRequest,
@@ -34,11 +31,10 @@ func (h *Handler) handleGetChapters(w http.ResponseWriter, r *http.Request) erro
         }
     }
 
-    data, err := h.chapterApi.GetChapters(page, _type)
+    data, err := h.commentApi.GetComments(cid)
     if err != nil {
         return err
     }
 
     return utils.SendJson(w, r, data)
 }
-

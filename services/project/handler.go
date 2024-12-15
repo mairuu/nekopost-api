@@ -6,15 +6,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mairuu/nekopost-api/api"
+	"github.com/mairuu/nekopost-api/types"
 	"github.com/mairuu/nekopost-api/utils"
 )
 
 type Handler struct {
+    projectApi types.ProjectApi
 }
 
-func NewHandler() Handler {
-    return Handler{}
+func NewHandler(projectApi types.ProjectApi) *Handler {
+    return &Handler{
+        projectApi: projectApi,
+    }
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -27,7 +30,7 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 }
 
 func (h *Handler) handleGetRandomProjects(w http.ResponseWriter, r *http.Request) error {
-    data, err := api.GetRandomProjects()
+    data, err := h.projectApi.GetRandomProjects()
     if err != nil {
         return err
     }
@@ -35,7 +38,7 @@ func (h *Handler) handleGetRandomProjects(w http.ResponseWriter, r *http.Request
 }
 
 func (h *Handler) handleGetPopularProjects(w http.ResponseWriter, r *http.Request) error {
-    data, err := api.GetPopularProjects()
+    data, err := h.projectApi.GetPopularProjects()
     if err != nil {
         return err
     }
@@ -56,7 +59,7 @@ func (h *Handler) handleGetProjects(w http.ResponseWriter, r *http.Request) erro
         }
     }
 
-    data, err := api.GetProjects(page, order, types, genres)
+    data, err := h.projectApi.GetProjects(page, order, types, genres)
     if err != nil {
         return err
     }
@@ -74,7 +77,7 @@ func (h *Handler) handleGetProject(w http.ResponseWriter, r *http.Request) error
         }
     }
 
-    data, err := api.GetProject(pid)
+    data, err := h.projectApi.GetProject(pid)
     if err != nil {
         return err
     }
@@ -127,7 +130,7 @@ func (h *Handler) handleGetProjectChapter(w http.ResponseWriter, r *http.Request
         }
     }
 
-    data, err := api.GetChapter(pid, cid)
+    data, err := h.projectApi.GetProjectChapter(pid, cid)
     if err != nil {
         return err
     }
